@@ -1,0 +1,34 @@
+<% const me = locals.me || null, path = locals.path || '', flash = locals.flash || null, title = locals.title || null; %><!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title ? title + ' — ' : '' %>Feed My Farm Friends</title>
+  <meta name="description" content="Watch our horses, chickens and ducks live, and give them a treat from anywhere.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <div class="wrap bar__inner">
+    <a href="/" class="logo">Feed My <span>Farm Friends</span></a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <% if (me) { %>
+          <li><a href="/cams"<%- path.startsWith('/cams') ? ' aria-current="page"' : '' %>>Live cams</a></li>
+          <li><a href="/account"<%- path === '/account' ? ' aria-current="page"' : '' %>>Account<% if (me.isSubscribed) { %> <span class="pill"><%= me.treat_credits %> treats</span><% } %></a></li>
+          <% if (me.isAdmin) { %><li><a href="/admin/stations"<%- path.startsWith('/admin') ? ' aria-current="page"' : '' %>>Stations</a></li><% } %>
+          <li><form method="post" action="/logout"><button class="linkbtn" type="submit">Sign out</button></form></li>
+        <% } else { %>
+          <li><a href="/login">Sign in</a></li>
+          <li><a class="btn btn--small" href="/register">Join</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<% if (flash) { %><div class="wrap"><p class="flash" role="status"><%= flash %></p></div><% } %>

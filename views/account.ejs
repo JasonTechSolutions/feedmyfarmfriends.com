@@ -1,0 +1,60 @@
+<%- include('partials/top') %>
+<section class="wrap">
+  <h1>Hi <%= me.name %></h1>
+  <% if (welcome) { %><p class="flash" role="status">Welcome to the farm! Your membership is active. Grab some treats below, then head to the live cams.</p><% } %>
+  <% if (bought) { %><p class="flash" role="status">Thanks! <%= bought %> treats are on their way to your account. They show up within a few seconds.</p><% } %>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>Membership</h2>
+      <% if (me.isSubscribed) { %>
+        <p><strong>Active.</strong><% if (me.sub_period_end) { %> Renews <%= new Date(me.sub_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>.<% } %></p>
+        <% if (payEnabled && me.stripe_customer_id) { %>
+        <form method="post" action="/account/billing"><button class="btn btn--ghost" type="submit">Manage billing or cancel</button></form>
+        <% } %>
+      <% } else { %>
+        <p>Membership unlocks every live camera on the farm and lets you feed the animals.</p>
+        <% if (me.sub_status === 'past_due') { %><p class="error">Your last payment didn&rsquo;t go through. Update your card to keep watching.</p><% } %>
+        <% if (payEnabled) { %>
+          <form method="post" action="/account/join"><button class="btn" type="submit">Become a member</button></form>
+        <% } else { %><p class="note">Memberships open soon.</p><% } %>
+      <% } %>
+    </section>
+
+    <section class="panel">
+      <h2>Treats</h2>
+      <p class="big"><%= me.treat_credits %> <span>treats ready to give</span></p>
+      <% if (me.isSubscribed && payEnabled) { %>
+        <p>Every treat is $1. Buy a bundle and feed whenever you like.</p>
+        <div class="bundles">
+          <% bundles.forEach(b => { %>
+          <form method="post" action="/account/treats">
+            <input type="hidden" name="bundle" value="<%= b.id %>">
+            <button class="bundle" type="submit"><strong><%= b.treats %> treats</strong><span>$<%= (b.cents / 100).toFixed(0) %></span><% if (b.treats * 100 > b.cents) { %><em><%= b.treats - b.cents / 100 %> free</em><% } %></button>
+          </form>
+          <% }) %>
+        </div>
+      <% } else if (!me.isSubscribed) { %><p class="note">Join to buy treats.</p>
+      <% } else { %><p class="note">Treat bundles open soon.</p><% } %>
+    </section>
+  </div>
+
+  <% if (history.length) { %>
+  <section class="panel">
+    <h2>Recent activity</h2>
+    <table class="table">
+      <thead><tr><th>When</th><th>What</th><th class="num">Treats</th></tr></thead>
+      <tbody>
+      <% history.forEach(h => { %>
+        <tr>
+          <td><%= new Date(h.created_at).toLocaleString('en-US', { timeZone: 'America/Chicago', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) %></td>
+          <td><%= h.reason === 'feed' ? `Fed ${h.station || 'a station'}` : h.reason === 'refund' ? `Refund: ${h.station || 'station'} dispenser didn’t drop` : h.reason === 'purchase' ? 'Bought treats' : 'Gift from the farm' %></td>
+          <td class="num"><%= h.delta > 0 ? '+' : '' %><%= h.delta %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </section>
+  <% } %>
+</section>
+<%- include('partials/bottom') %>

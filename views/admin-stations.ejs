@@ -1,0 +1,60 @@
+<%- include('partials/top') %>
+<section class="wrap">
+  <h1>Stations</h1>
+
+  <section class="panel <%= settings.all_paused ? 'panel--alert' : '' %>">
+    <h2>Farm-wide</h2>
+    <% if (settings.all_paused) { %>
+      <p><strong>All feeding is paused.</strong><% if (settings.pause_note) { %> Visitors see: &ldquo;<%= settings.pause_note %>&rdquo;<% } %></p>
+      <form method="post" action="/admin/pause-all"><input type="hidden" name="pause" value="0"><button class="btn" type="submit">Turn feeding back on</button></form>
+    <% } else { %>
+      <form method="post" action="/admin/pause-all" class="row">
+        <input type="hidden" name="pause" value="1">
+        <label class="grow">Message for visitors (optional) <input name="note" maxlength="200" placeholder="The vet is visiting today. Back tomorrow!"></label>
+        <button class="btn btn--danger" type="submit">Pause all feeding</button>
+      </form>
+    <% } %>
+    <form method="post" action="/admin/settings" class="row">
+      <label>Treats per member per day <input type="number" name="member_daily_limit" min="1" max="100" value="<%= settings.member_daily_limit %>"></label>
+      <button class="btn btn--ghost" type="submit">Save</button>
+    </form>
+  </section>
+
+  <% if (newToken) { %>
+  <section class="panel panel--alert">
+    <h2>New dispenser token for <%= newToken.slug %></h2>
+    <p>Copy this into the dispenser&rsquo;s settings now. It won&rsquo;t be shown again, and the old token has stopped working.</p>
+    <p><code class="token"><%= newToken.token %></code></p>
+  </section>
+  <% } %>
+
+  <% stations.forEach(s => {
+       const seen = s.device_last_seen ? new Date(s.device_last_seen).getTime() : 0;
+       const online = seen && now - seen < 90 * 1000;
+       const hhmm = t => String(t).slice(0, 5); %>
+  <details class="panel admin-station"<%= s.is_paused || s.device_fault ? ' open' : '' %>>
+    <summary>
+      <strong><%= s.name %></strong>
+      <span class="small"><%= s.given %> / <%= s.daily_cap %> today<%= s.failed ? ` · ${s.failed} refunded` : '' %></span>
+      <span class="tag <%= online ? (s.device_fault ? 'tag--warn' : 'tag--ok') : 'tag--off' %>"><%= !s.device_token_hash ? 'No dispenser' : online ? (s.device_fault || 'Dispenser online') : 'Dispenser offline' %></span>
+      <% if (s.is_paused) { %><span class="tag tag--warn">Paused</span><% } %>
+    </summary>
+    <form method="post" action="/admin/stations/<%= s.id %>" class="form form--grid">
+      <label>Name <input name="name" value="<%= s.name %>" maxlength="100" required></label>
+      <label>Daily cap (treats) <input type="number" name="daily_cap" min="0" max="500" value="<%= s.daily_cap %>"></label>
+      <label>Cooldown between treats (seconds) <input type="number" name="cooldown_seconds" min="0" max="3600" value="<%= s.cooldown_seconds %>"></label>
+      <label>Opens (farm time) <input type="time" name="opens_at" value="<%= hhmm(s.opens_at) %>"></label>
+      <label>Closes (farm time) <input type="time" name="closes_at" value="<%= hhmm(s.closes_at) %>"></label>
+      <label>Cloudflare Stream live input ID <input name="stream_uid" value="<%= s.stream_uid || '' %>" maxlength="100"></label>
+      <label class="wide">Description <input name="blurb" value="<%= s.blurb || '' %>" maxlength="500"></label>
+      <label class="check"><input type="checkbox" name="is_paused" value="1"<%= s.is_paused ? ' checked' : '' %>> Pause this station</label>
+      <label class="wide">Pause message (optional) <input name="pause_note" value="<%= s.pause_note || '' %>" maxlength="200"></label>
+      <button class="btn" type="submit">Save <%= s.name %></button>
+    </form>
+    <form method="post" action="/admin/stations/<%= s.id %>/device-token">
+      <button class="btn btn--ghost" type="submit"><%= s.device_token_hash ? 'Replace dispenser token' : 'Create dispenser token' %></button>
+    </form>
+  </details>
+  <% }) %>
+</section>
+<%- include('partials/bottom') %>

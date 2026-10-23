@@ -1,0 +1,13 @@
+<%- include('partials/top') %>
+<section class="wrap narrow">
+  <h1>Sign in</h1>
+  <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+  <form method="post" action="/login" class="form">
+    <input type="hidden" name="next" value="<%= next %>">
+    <label>Email <input type="email" name="email" value="<%= email %>" autocomplete="email" required></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <p>New here? <a href="/register">Create an account</a>.</p>
+</section>
+<%- include('partials/bottom') %>

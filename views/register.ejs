@@ -1,0 +1,15 @@
+<%- include('partials/top') %>
+<section class="wrap narrow">
+  <h1>Create your account</h1>
+  <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+  <form method="post" action="/register" class="form">
+    <label>Your first name <input name="name" value="<%= form.name || '' %>" autocomplete="given-name" maxlength="80" required></label>
+    <label>Email <input type="email" name="email" value="<%= form.email || '' %>" autocomplete="email" required></label>
+    <label>Password <input type="password" name="password" autocomplete="new-password" minlength="10" required>
+      <small>At least 10 characters.</small></label>
+    <label class="check"><input type="checkbox" name="age_ok" value="yes" required> I&rsquo;m 13 or older</label>
+    <button class="btn" type="submit">Create account</button>
+  </form>
+  <p>Already a member? <a href="/login">Sign in</a>.</p>
+</section>
+<%- include('partials/bottom') %>

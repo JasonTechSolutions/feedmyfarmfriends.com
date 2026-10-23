@@ -1,0 +1,19 @@
+<%- include('partials/top') %>
+<section class="wrap">
+  <h1>Live cams</h1>
+  <p class="lead">Pick a friend to watch. You have <strong><%= me.treat_credits %></strong> treats to give.</p>
+  <ul class="stations">
+    <% stations.forEach(s => { const full = s.given >= s.daily_cap; %>
+    <li>
+      <a href="/cams/<%= s.slug %>" class="station-card">
+        <span class="kind kind--<%= s.kind %>"><%= KIND_LABEL[s.kind] || s.kind %></span>
+        <h2><%= s.name %></h2>
+        <p><%= s.blurb %></p>
+        <meter class="meter" min="0" max="<%= s.daily_cap %>" value="<%= s.given %>"><%= s.given %> of <%= s.daily_cap %></meter>
+        <p class="small"><%= full ? 'All treats given for today' : s.is_paused ? 'Feeding paused' : `${s.given} of ${s.daily_cap} treats today` %></p>
+      </a>
+    </li>
+    <% }) %>
+  </ul>
+</section>
+<%- include('partials/bottom') %>

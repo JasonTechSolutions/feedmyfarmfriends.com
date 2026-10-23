@@ -1,0 +1,18 @@
+<%- include('partials/top') %>
+<section class="hero">
+  <div class="wrap">
+    <h1>Watch our farm friends live. Give them a treat from anywhere.</h1>
+    <p class="lead">Eight paddocks of horses, a coop full of chickens and a shack of ducks on our 80-acre farm, streaming all day. Members tap a button and a real treat drops while you watch.</p>
+    <p><a class="btn" href="<%= locals.me ? '/cams' : '/register' %>"><%= locals.me ? 'Go to the live cams' : 'Become a member' %></a></p>
+  </div>
+</section>
+<section class="wrap steps">
+  <h2>How it works</h2>
+  <ol class="cards">
+    <li><h3>Join</h3><p>Sign up for a membership to unlock every live camera on the farm.</p></li>
+    <li><h3>Pick a friend</h3><p>Choose a paddock, the chicken coop or the duck shack and watch them live.</p></li>
+    <li><h3>Feed them</h3><p>Each treat is $1. Tap Feed and watch it land in the trough a few seconds later.</p></li>
+  </ol>
+  <p class="note">Every station has a daily treat limit set with our vet. When it&rsquo;s reached, you&rsquo;ll see &ldquo;They&rsquo;ve had plenty of treats today. Come back tomorrow!&rdquo;</p>
+</section>
+<%- include('partials/bottom') %>
