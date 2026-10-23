@@ -1,0 +1,28 @@
+<%- include('partials/top') %>
+<section class="wrap">
+  <p class="crumb"><a href="/cams">&larr; All cams</a></p>
+  <div class="station">
+    <div class="player">
+      <% if (player) { %>
+        <iframe src="<%= player %>" title="Live camera: <%= station.name %>" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="eager"></iframe>
+      <% } else { %>
+        <div class="player__empty"><p>This camera is being set up. Check back soon!</p></div>
+      <% } %>
+    </div>
+    <aside class="feed panel" id="feed"
+      data-slug="<%= station.slug %>"
+      data-status='<%- JSON.stringify(initial).replace(/</g, "\\u003c").replace(/'/g, "\\u0027") %>'>
+      <span class="kind kind--<%= station.kind %>"><%= KIND_LABEL[station.kind] || station.kind %></span>
+      <h1><%= station.name %></h1>
+      <p><%= station.blurb %></p>
+      <meter class="meter" id="feed-meter" min="0" max="<%= initial.cap %>" value="<%= initial.given %>"></meter>
+      <p class="small" id="feed-count"><%= initial.given %> of <%= initial.cap %> treats given today</p>
+      <button class="btn btn--feed" id="feed-btn" type="button"<%= initial.ok ? '' : ' disabled' %>>Feed for $1</button>
+      <p class="feed__msg" id="feed-msg" role="status" aria-live="polite"><%= initial.ok ? '' : initial.message %></p>
+      <p class="small">You have <strong id="feed-credits"><%= initial.credits %></strong> treats. <a href="/account">Get more</a></p>
+      <p class="small note">Feeding hours <%= hours %> farm time. Up to <%= initial.memberLimit %> treats per member a day.</p>
+    </aside>
+  </div>
+</section>
+<script src="/js/station.js" defer></script>
+<%- include('partials/bottom') %>
